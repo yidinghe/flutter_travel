@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_travel/demo/flutter_layout_page.dart';
 import 'package:flutter_travel/demo/less_group_page.dart';
 import 'package:flutter_travel/demo/stateful_group_page.dart';
 
-void main() => runApp(StatefulGroup());
+void main() => runApp(FlutterLayoutPage());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
