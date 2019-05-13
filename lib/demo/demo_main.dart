@@ -3,6 +3,7 @@ import 'package:flutter_travel/demo/flutter_layout_page.dart';
 import 'package:flutter_travel/demo/gesture_page.dart';
 import 'package:flutter_travel/demo/launch_page.dart';
 import 'package:flutter_travel/demo/less_group_page.dart';
+import 'package:flutter_travel/demo/photo_app_page.dart';
 import 'package:flutter_travel/demo/stateful_group_page.dart';
 
 void main() => runApp(MyApp());
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           'gesture': (BuildContext context) => GesturePage(),
 //          'res': (BuildContext context) => ResPage(),
           'launch': (BuildContext context) => LaunchPage(),
-//          'photo': (BuildContext context) => PhotoApp(),
+          'photo': (BuildContext context) => PhotoApp(),
         });
   }
 }
@@ -61,7 +62,7 @@ class _RouteNavigatorState extends State<RouteNavigator> {
           _item('如何检测用户手势以及处理点击事件？', GesturePage(), 'gesture'),
 //          _item('如何导入和使用Flutter的资源文件？', ResPage(), 'res'),
           _item('如何打开第三方应用？', LaunchPage(), 'launch'),
-//          _item('【实战尝鲜】拍照APP开发', PhotoApp(), 'photo'),
+          _item('【实战尝鲜】拍照APP开发', PhotoApp(), 'photo'),
         ],
       ),
     );
