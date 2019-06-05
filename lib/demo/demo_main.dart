@@ -6,9 +6,7 @@ import 'package:flutter_travel/demo/less_group_page.dart';
 import 'package:flutter_travel/demo/photo_app_page.dart';
 import 'package:flutter_travel/demo/stateful_group_page.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
+class DemoApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
