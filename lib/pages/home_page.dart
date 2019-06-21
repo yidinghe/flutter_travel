@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_travel/dao/homo_dao.dart';
+import 'package:flutter_travel/model/common_model.dart';
 import 'dart:convert';
 
 import 'package:flutter_travel/model/home_model.dart';
+import 'package:flutter_travel/widget/local_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -20,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   double appBarAlpha = 0;
-  String resultString = "";
+  List<CommonModel> localNavList = [];
 
   @override
   void initState() {
@@ -53,18 +55,17 @@ class _HomePageState extends State<HomePage> {
     try {
       HomeModel homeModel = await HomeDao.fetch();
       setState(() {
-        resultString = json.encode(homeModel.config);
+        localNavList = homeModel.localNavList;
       });
     } catch (e) {
-      setState(() {
-        resultString = e.toString();
-      });
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff2f2f2),
       body: Stack(
         children: <Widget>[
           MediaQuery.removePadding(
@@ -93,10 +94,16 @@ class _HomePageState extends State<HomePage> {
                       pagination: SwiperPagination(),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(7, 4, 4, 7),
+                    child: LocalNav(
+                      localNavList: localNavList,
+                    ),
+                  ),
                   Container(
                     height: 800,
                     child: ListTile(
-                      title: Text(resultString),
+                      title: Text("resultString"),
                     ),
                   ),
                 ],
