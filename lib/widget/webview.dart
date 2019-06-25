@@ -14,10 +14,10 @@ class WebView extends StatefulWidget {
 
   WebView(
       {this.url,
-      this.statusBarColor,
-      this.title,
-      this.hideAppBar,
-      this.backForbid = false}) {
+        this.statusBarColor,
+        this.title,
+        this.hideAppBar,
+        this.backForbid = false}) {
     if (url != null && url.contains('ctrip.com')) {
       //fix 携程H5 http://无法打开问题
       url = url.replaceAll("http://", 'https://');
@@ -33,6 +33,7 @@ class _WebViewState extends State<WebView> {
   StreamSubscription<String> _onUrlChanged;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
   StreamSubscription<WebViewHttpError> _onHttpError;
+  bool exiting = false;
 
   @override
   void initState() {
@@ -41,27 +42,45 @@ class _WebViewState extends State<WebView> {
     _onUrlChanged = webviewReference.onUrlChanged.listen((String url) {});
     _onStateChanged =
         webviewReference.onStateChanged.listen((WebViewStateChanged state) {
-      switch (state.type) {
-        case WebViewState.startLoad:
-          break;
-
-        default:
-          break;
-      }
-    });
+          switch (state.type) {
+            case WebViewState.startLoad:
+              if (_isToMain(state.url) && !exiting) {
+                if (widget.backForbid) {
+                  webviewReference.launch(widget.url);
+                } else {
+                  Navigator.pop(context);
+                  exiting = true;
+                }
+              }
+              break;
+            default:
+              break;
+          }
+        });
     _onHttpError =
-        webviewReference.onHttpError.listen((WebViewHttpError error) {});
+        webviewReference.onHttpError.listen((WebViewHttpError error) {
+          print(error);
+        });
   }
 
-
+  _isToMain(String url) {
+    bool contain = false;
+    for (final value in CATCH_URLS) {
+      if (url?.endsWith(value) ?? false) {
+        contain = true;
+        break;
+      }
+    }
+    return contain;
+  }
 
   @override
   void dispose() {
-    super.dispose();
-    _onUrlChanged.cancel();
     _onStateChanged.cancel();
+    _onUrlChanged.cancel();
     _onHttpError.cancel();
     webviewReference.dispose();
+    super.dispose();
   }
 
   @override
@@ -73,25 +92,25 @@ class _WebViewState extends State<WebView> {
     } else {
       backButtonColor = Colors.white;
     }
-
     return Scaffold(
       body: Column(
         children: <Widget>[
           _appBar(
               Color(int.parse('0xff' + statusBarColorStr)), backButtonColor),
           Expanded(
-            child: WebviewScaffold(
-              url: widget.url,
-              userAgent: null,
-              withZoom: true,
-              withLocalStorage: true,
-              hidden: true,
-              initialChild: Container(
-                color: Colors.white,
-                child: Text('Waiting...'),
-              ),
-            ),
-          )
+              child: WebviewScaffold(
+                userAgent: 'null',//防止携程H5页面重定向到打开携程APP ctrip://wireless/xxx的网址
+                url: widget.url,
+                withZoom: true,
+                withLocalStorage: true,
+                hidden: true,
+                initialChild: Container(
+                  color: Colors.white,
+                  child: Center(
+                    child: Text('Waiting...'),
+                  ),
+                ),
+              ))
         ],
       ),
     );
@@ -103,36 +122,40 @@ class _WebViewState extends State<WebView> {
         color: backgroundColor,
         height: 30,
       );
-    } else {
-      return Container(
-        child: FractionallySizedBox(
-          widthFactor: 1,
-          child: Stack(
-            children: <Widget>[
-              GestureDetector(
-                child: Container(
-                  margin: EdgeInsets.only(left: 10),
-                  child: Icon(
-                    Icons.close,
-                    color: backButtonColor,
-                    size: 26,
-                  ),
+    }
+    return Container(
+      color: backgroundColor,
+      padding: EdgeInsets.fromLTRB(0, 40, 0, 10),
+      child: FractionallySizedBox(
+        widthFactor: 1,
+        child: Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 10),
+                child: Icon(
+                  Icons.close,
+                  color: backButtonColor,
+                  size: 26,
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Text(
-                    widget.title ?? '',
-                    style: TextStyle(color: backButtonColor, fontSize: 20),
-                  ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Text(
+                  widget.title ?? '',
+                  style: TextStyle(color: backButtonColor, fontSize: 20),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 }
